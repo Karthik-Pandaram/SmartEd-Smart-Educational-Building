@@ -1,7 +1,8 @@
 import datetime
 import paho.mqtt.client as mqtt
+#import pytz
 from influxdb import InfluxDBClient
-INFLUXDB_ADDRESS = '192.168.42.1'
+INFLUXDB_ADDRESS = '10.0.2.15'
 INFLUXDB_USER = 'dietpi'
 INFLUXDB_PASSWORD = 'dietpi'
 INFLUXDB_DATABASE = 'smart_monitoring'
@@ -57,5 +58,5 @@ def main():
     mqtt_client.loop_forever()
 if __name__ == '__main__':
     print('MQTT to InfluxDB bridge')
+    print("Local", datetime.datetime.now())
     main()
-    
