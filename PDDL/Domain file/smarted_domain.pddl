@@ -2,7 +2,6 @@
 
 (define (domain Smarted)
 
-;remove requirements that are not needed
 (:requirements :strips :fluents :typing :negative-preconditions :disjunctive-preconditions :equality)
 
 (:types 
@@ -13,14 +12,8 @@ buzzer
 mail_report 
 message
 pillar
-;todo: enumerate types and their hierarchy here, e.g. car truck bus - vehicle
-;types of inputs- sensors of various types, various rooms and floors
-;sensor
-;types for actuators/outputs
 )
 
-; un-comment following line if constants are needed
-;(:constants )
 
 (:predicates ;todo: define predicates here
         (structure-monitor)
@@ -140,13 +133,4 @@ pillar
                   (<(lux ?f) (threshold_lux)))
     :effect (and (not(off2 ?l))(send ?h)(light-under-control)(light-control-on))
 )
-
-
-; (:action safe-state-no-emergency
-;     :parameters (?f -floor ?h - message ?mtr - fanmotor ?b - buzzer)
-;     :precondition (or(<(co2 ?f) (threshold_co2))
-;                   (=(flame ?f)(threshold_flame))
-;                   )
-;      :effect (and (off3 ?mtr) (off1 ?b) (send ?h)(ambience-monitor))
-; )
 )
