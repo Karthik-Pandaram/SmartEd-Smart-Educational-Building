@@ -35,8 +35,8 @@
     ;current sensor values
     
     (= (flame f)  227)
-    (= (lux f)  1)
-    (= (piezo f)  222)
+    (= (lux f)  800)
+    (= (piezo f)  5)
     (= (humidity f)  20)
     (= (temperature f) 10)
     (= (co2 f)  0)
@@ -45,7 +45,12 @@
 
 (:goal (and
         (structure-monitor)
-        (ambience-monitor)
+        ;(ambience-monitor)
+        (light-under-control)
+        (temperature-under-control)
+        (send-mail-fire)
+        (send-mail-structure)
+        ;(no-emergency)
 )
 )
 )
