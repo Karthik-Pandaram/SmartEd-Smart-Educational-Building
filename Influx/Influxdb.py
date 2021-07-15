@@ -1,6 +1,5 @@
 import datetime
 import paho.mqtt.client as mqtt
-#import pytz
 from influxdb import InfluxDBClient
 INFLUXDB_ADDRESS = '10.0.2.15'
 INFLUXDB_USER = 'dietpi'
