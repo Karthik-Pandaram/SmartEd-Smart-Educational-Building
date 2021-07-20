@@ -2,13 +2,25 @@
 from time import sleep
 import paho.mqtt.client as mqtt
 from gpiozero import PWMLED, Buzzer,LED
+import RPi.GPIO as GPIO
+import smtplib, ssl
+
 
 
 # Assigning hardware Macros
-led = PWMLED(17)  # See Gpio zero for pin config
+led = LED(17)  # See Gpio zero for pin config
 Emergency_light = LED(27) # See gpio zero
 buzzer = Buzzer(22)
 Fan = LED(26)
+# PWM led config
+led_pin = 18
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(led_pin, GPIO.OUT)
+
+#frequency 500 Hz
+led_pwm = GPIO.PWM(led_pin, 500)
+#duty cycle = 100
+led_pwm.start(100)
 
 # MQTT part
 MQTT_ADDRESS = '192.168.42.1'
@@ -33,35 +45,119 @@ def on_message(client, userdata, msg):
     #     Actuator(x)
     Actuator(payloadDataValues)
 
-def sendmail():
-    print('Mail sent')
+def sendmailFirerescue():
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    sender_email = "writer.banu11@gmail.com"  # Enter your address
+    receiver_email = "karthikp0712@gmail.com"  # Enter receiver address
+    password = "Dreambig@1"
+    message = """\
+Subject: Fire Emergency 
+
+There is a Fire emergency at the School """
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+    	server.login(sender_email, password)
+    	server.sendmail(sender_email, receiver_email, message)
+
+def sendmail_Parent():
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    sender_email = "writer.banu11@gmail.com"  # Enter your address
+    receiver_email = "karthikp0712@gmail.com"  # Enter receiver address
+    password = "Dreambig@1"
+    message = """\
+Subject: Emergency at School 
+
+There is a emergency at the School please report at the school parking to pickup your children """
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+    	server.login(sender_email, password)
+    	server.sendmail(sender_email, receiver_email, message)
+
+def sendmail_Structure_Rescue():
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    sender_email = "writer.banu11@gmail.com"  # Enter your address
+    receiver_email = "karthikp0712@gmail.com"  # Enter receiver address
+    password = "Dreambig@1"
+    message = """\
+Subject: Structural Hazard  
+
+The Stuructural intergrity of the School is poor, it may collapse """
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+    	server.login(sender_email, password)
+    	server.sendmail(sender_email, receiver_email, message)
 
 def Actuator(actuation_message):
     print('Message inside Function')
     print(actuation_message)
-    if "'safe-state-no-emergency'" in actuation_message :
-        buzzer.on()
-        Emergency_light.on()
-        led.on() 
-        sleep(1)
-        led.off()
-        sleep(1)
-    elif " 'temperature-control-off'" in actuation_message:
-         Fan.off()
-    elif actuation_message == 'send-mail':
-          sendmail();  
-    elif actuation_message == 'all-in-control':
-          buzzer.off()
-    elif actuation_message == 'notify-emergency':           
-          buzzer.on()
-          sendmail()
-    elif actuation_message == 'temperature-control-on':
-          Fan.on()    
-    elif actuation_message == 'leicht-control-off':
-          led.value = 0.3   # Low brightness
-    elif actuation_message == 'leicht-control-on':
-          led.value = 1.0   # Full brightness   
+
+    if ("'Fire-send-mail'") in actuation_message:
+        sendmailFirerescue()
+        sendmail_Parent()
+        print('1')
     
+    if (" 'Fire-send-mail'") in actuation_message:
+        sendmailFirerescue()
+        sendmail_Parent()
+        print('1')
+
+    if ("'Structure-send-mail'")  in actuation_message:
+        sendmail_Parent()
+        sendmail_Structure_Rescue()
+        print('2')
+    if (" 'Structure-send-mail'") in actuation_message:
+        sendmail_Parent()
+        sendmail_Structure_Rescue()
+        print('2')
+
+    if ("'in-control'")  in actuation_message:
+         buzzer.off() 
+         print('3')
+
+    if (" 'in-control'") in actuation_message:
+         buzzer.off()
+         print(3)
+
+    if ("'notify-emergency'") in actuation_message:
+         print('4')
+         buzzer.on()
+         sleep(1)
+         buzzer.off()
+         sleep(1)
+    if  (" 'notify-emergency'") in actuation_message:
+         print('4')
+         buzzer.on()
+         sleep(1)
+         buzzer.off()
+         sleep(1)
+    if ("'turn-off-temperature-control'") in actuation_message:
+          print('6')
+          Fan.off()
+          sleep(1)
+    if (" 'turn-off-temperature-control'") in actuation_message:
+          print('6')
+          Fan.off()
+          sleep(1)          
+    if ("'turn-on-temperature-control'") in actuation_message:
+          print('7')
+          Fan.on()
+          sleep(1)
+    if (" 'turn-on-temperature-control'") in actuation_message: 
+          print('7')
+          Fan.on()
+          sleep(1)  
+    if "'leicht-control-off'" in actuation_message:
+         print('8')
+         led_pwm.ChangeDutyCycle(10)
+         sleep(1)  # Low brightness
+    if "'leicht-control-on'" in actuation_message:
+         print('9')
+         led_pwm.ChangeDutyCycle(100) 
+         sleep(1)   # Full brightness   
+  
 
 def main():
     #_init_influxdb_database()
@@ -74,4 +170,6 @@ def main():
 
 if __name__ == '__main__':
     print('Actuator')
-    main()    
+    main() 
+
+ 
